@@ -41,13 +41,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Generate Random Number
+        id: random-step
+        run: |
+          # 生成 1 到 100 之间的随机数
+          RAND_NUM=$((1 + $RANDOM % 100))
+          echo "num=$RAND_NUM" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ steps.vars.outputs.owner_lower }}/hugws:latest
+            ghcr.io/${{ steps.vars.outputs.owner_lower }}/hugws-${{ steps.random-step.outputs.num }}:latest
           labels: |
             org.opencontainers.image.source=https://github.com/${{ steps.vars.outputs.repo_lower }}
             org.opencontainers.image.description=http server
