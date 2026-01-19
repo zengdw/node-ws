@@ -41,12 +41,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Generate Random Number
-        id: random-step
+      - name: Generate Random String
+        id: random-string
         run: |
-          # 生成 1 到 100 之间的随机数
-          RAND_NUM=$((1 + $RANDOM % 100))
-          echo "num=$RAND_NUM" >> $GITHUB_OUTPUT
+          # 生成 4 字节的十六进制，刚好是 8 位字符
+          STR=$(openssl rand -hex 4)
+          echo "val=$STR" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -54,7 +54,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ steps.vars.outputs.owner_lower }}/hugws-${{ steps.random-step.outputs.num }}:latest
+            ghcr.io/${{ steps.vars.outputs.owner_lower }}/${{ steps.random-string.outputs.val }}:latest
           labels: |
             org.opencontainers.image.source=https://github.com/${{ steps.vars.outputs.repo_lower }}
             org.opencontainers.image.description=http server
